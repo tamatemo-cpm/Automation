@@ -1,8 +1,8 @@
 name: Run Colab Notebook at 1PM and 7PM CLT
 on:
   schedule:
-    - cron: '0 11 * * *'  # 1:00 PM CLT
-    - cron: '0 17 * * *'  # 7:00 PM CLT
+    - cron: '0 10 * * *'  # 1:00 PM CLT
+    - cron: '0 16 * * *'  # 7:00 PM CLT
   workflow_dispatch:       # Allows manual triggering
 
 jobs:
