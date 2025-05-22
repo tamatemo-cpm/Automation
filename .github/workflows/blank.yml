@@ -1,0 +1,46 @@
+name: Run Colab Notebook at 1PM and 7PM CLT
+on:
+  schedule:
+    - cron: '0 11 * * *'  # 1:00 PM CLT
+    - cron: '0 17 * * *'  # 7:00 PM CLT
+  workflow_dispatch:       # Allows manual triggering
+
+jobs:
+  run-notebook:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade papermill nbconvert jupyter gdown ipykernel pandas requests
+
+      - name: Ensure Python kernel is available
+        run: |
+          python -m ipykernel install --user
+
+      - name: Check available Jupyter kernels
+        run: |
+          jupyter kernelspec list
+
+      - name: Download Colab notebook from Google Drive
+        run: |
+          gdown "https://drive.google.com/uc?id=1rX1dhcWEUZH_TqfRsfqBPgagbpOXSzPy" -O colab_script.ipynb
+
+      - name: Execute notebook
+        run: |
+          echo "Running notebook..."
+          papermill colab_script.ipynb output.ipynb --kernel python3
+
+      - name: Upload processed notebook as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: processed-notebook
+          path: output.ipynb
